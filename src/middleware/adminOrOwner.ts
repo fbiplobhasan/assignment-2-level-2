@@ -6,14 +6,14 @@ const adminOrOwner = (req: Request, res: Response, next: NextFunction) => {
   if (!loggedInUser) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized, no user found",
+      message: "Unauthorized access",
     });
   }
 
   const paramId = req.params.id;
 
   if (loggedInUser.role === "admin") return next();
-  
+
   if (loggedInUser.id === paramId) return next();
 
   return res.status(403).json({

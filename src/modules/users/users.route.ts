@@ -13,6 +13,4 @@ router.put("/:id", auth(), adminOrOwner, userControllers.updateUser);
 
 router.delete("/:id", auth(), adminOrOwner, userControllers.deleteUser);
 
-// route.get("/",);
-
 export const userRouter = router;
