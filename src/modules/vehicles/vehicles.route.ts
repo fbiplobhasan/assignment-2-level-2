@@ -12,4 +12,6 @@ router.get("/:id", vehicleControllers.getSingleVehicle);
 
 router.put("/:id", vehicleControllers.updateVehicle);
 
+router.delete("/:id", vehicleControllers.deleteVehicle);
+
 export const vehicleRouter = router;
