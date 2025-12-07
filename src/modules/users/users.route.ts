@@ -9,7 +9,9 @@ router.post("/", userControllers.createUser);
 
 router.get("/", auth(), adminOrOwner, userControllers.getAllUsers);
 
-router.put("/:id", userControllers.updateUser);
+router.put("/:id", auth(), adminOrOwner, userControllers.updateUser);
+
+router.delete("/:id", auth(), adminOrOwner, userControllers.deleteUser);
 
 // route.get("/",);
 
