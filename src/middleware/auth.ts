@@ -18,14 +18,6 @@ const auth = (...roles: string[]) => {
           .json({ success: false, message: "No token provided" });
       }
 
-      // const token = authHeader.split(" ")[1];
-
-      // if (!token) {
-      //   return res
-      //     .status(401)
-      //     .json({ success: false, message: "Invalid token format" });
-      // }
-
       if (!config.jwtSecret) {
         throw new Error("JWT Secret is missing,");
       }
@@ -33,7 +25,6 @@ const auth = (...roles: string[]) => {
 
       req.user = decoded;
 
-      // Role checking
       if (roles.length && !roles.includes(decoded.role)) {
         return res.status(403).json({
           success: false,

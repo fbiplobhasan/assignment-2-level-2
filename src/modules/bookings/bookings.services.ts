@@ -1,10 +1,8 @@
 import { pool } from "../../config/db";
 
-// Create Booking
 const createBooking = async (payload: any) => {
   const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
-  // 1) Vehicle price + name fetch করা
   const vehicleResult = await pool.query(
     `SELECT vehicle_name, daily_rent_price 
      FROM vehicles WHERE id=$1`,
@@ -15,22 +13,18 @@ const createBooking = async (payload: any) => {
 
   const vehicle = vehicleResult.rows[0];
 
-  // 2) তারিখকে ভালো format এ আনা (YYYY-MM-DD)
   const start = new Date(rent_start_date);
   const end = new Date(rent_end_date);
 
-  const formattedStart = start.toISOString().split("T")[0]; // 2024-01-15
-  const formattedEnd = end.toISOString().split("T")[0]; // 2024-01-20
+  const formattedStart = start.toISOString().split("T")[0]; 
+  const formattedEnd = end.toISOString().split("T")[0]; 
 
-  // 3) দিনের হিসাব (ceil দিয়ে up-round করা)
   const days = Math.ceil(
     (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  // 4) total price সবসময় number হিসেবে রাখা
   const total_price = vehicle.daily_rent_price * days;
 
-  // 5) Insert booking and return inserted row
   const bookingResult = await pool.query(
     `INSERT INTO bookings(customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status)
      VALUES($1,$2,$3,$4,$5,'active') RETURNING *`,
@@ -39,19 +33,17 @@ const createBooking = async (payload: any) => {
       vehicle_id,
       formattedStart,
       formattedEnd,
-      total_price, // always number
+      total_price, 
     ]
   );
 
   const booking = bookingResult.rows[0];
 
-  // 6) Update vehicle status → booked
   await pool.query(
     "UPDATE vehicles SET availability_status='booked' WHERE id=$1",
     [vehicle_id]
   );
 
-  // 7) Expected output অনুযায়ী vehicle object add করা
   booking.vehicle = {
     vehicle_name: vehicle.vehicle_name,
     daily_rent_price: vehicle.daily_rent_price,
@@ -84,7 +76,6 @@ const getAllBookingCustomer = async (customer_id: string) => {
 };
 
 const updateBooking = async (bookingId: string, status: string) => {
-  // If returned → make vehicle available again
   if (status === "returned") {
     const booking = await pool.query(
       "SELECT vehicle_id FROM bookings WHERE id=$1",
@@ -99,7 +90,6 @@ const updateBooking = async (bookingId: string, status: string) => {
     );
   }
 
-  // Update booking status
   const result = await pool.query(
     "UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *",
     [status, bookingId]
