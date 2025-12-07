@@ -65,8 +65,49 @@ const getSingleVehicle = async (req: Request, res: Response) => {
   }
 };
 
+const updateVehicle = async (req: Request, res: Response) => {
+  const {
+    vehicle_name,
+    type,
+    registration_number,
+    daily_rent_price,
+    availability_status,
+  } = req.body;
+
+  const vData = {
+    vehicle_name,
+    type,
+    registration_number,
+    daily_rent_price,
+    availability_status,
+  };
+
+  try {
+    const result = await vehicleServices.updateVehicle(vData, req.params.id!);
+
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Vehicle not found.",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "Vehicle updated successful.",
+        data: result.rows[0],
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const vehicleControllers = {
   createVehicle,
   getUser,
   getSingleVehicle,
+  updateVehicle,
 };
