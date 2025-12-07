@@ -42,7 +42,31 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleVehicle = async (req: Request, res: Response) => {
+  try {
+    const result = await vehicleServices.getSingleVehicle(req.params.id!);
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Vehicle not found.",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "Vehicle retrieved successful.",
+        data: result.rows[0],
+      });
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 export const vehicleControllers = {
   createVehicle,
   getUser,
+  getSingleVehicle,
 };
