@@ -19,18 +19,25 @@ const createBooking = async (req: Request, res: Response) => {
 
 const getAllBookings = async (req: Request, res: Response) => {
   try {
-    const result = await bookingServices.getAllBookings();
+    let result;
+    if (req.user!.role === "admin") {
+      result = await bookingServices.getAllBookingsAdmin();
+    } else {
+      result = await bookingServices.getAllBookingCustomer(req.user!.id);
+    }
 
     res.status(200).json({
       success: true,
-      message: "Users retrieved successfully",
-      data: result.rows,
+      message:
+        req.user!.role === "admin"
+          ? "All bookings retrieved successfully"
+          : "Your bookings retrieved successfully",
+      data: result,
     });
   } catch (err: any) {
     res.status(500).json({
       success: false,
       message: err.message,
-      datails: err,
     });
   }
 };
@@ -41,12 +48,14 @@ const updateBooking = async (req: Request, res: Response) => {
       req.params.id!,
       req.body.status
     );
+
     if (!updatedBooking) {
       return res.status(404).json({
         success: false,
         message: "Booking not found.",
       });
     }
+
     res.status(200).json({
       success: true,
       message:
