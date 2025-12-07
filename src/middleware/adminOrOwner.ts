@@ -13,7 +13,6 @@ const adminOrOwner = (req: Request, res: Response, next: NextFunction) => {
   const paramId = req.params.id;
 
   if (loggedInUser.role === "admin") return next();
-
   if (loggedInUser.id === paramId) return next();
 
   return res.status(403).json({

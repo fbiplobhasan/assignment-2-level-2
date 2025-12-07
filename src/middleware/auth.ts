@@ -19,25 +19,21 @@ const auth = (...roles: string[]) => {
       }
 
       if (!config.jwtSecret) {
-        throw new Error("JWT Secret is missing,");
+        throw new Error("JWT Secret is missing");
       }
-      const decoded = jwt.verify(token, config.jwtSecret!) as JwtPayloadCustom;
 
+      const decoded = jwt.verify(token, config.jwtSecret!) as JwtPayloadCustom;
       req.user = decoded;
 
       if (roles.length && !roles.includes(decoded.role)) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied.",
-        });
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied." });
       }
 
       next();
     } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ success: false, message: error.message });
     }
   };
 };
