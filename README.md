@@ -20,10 +20,11 @@ PostgreSQL
 JWT Authentication
 bcrypt.js
 Neon
+
 Setup & Usage
 
 Clone the repository
-git clone https://github.com/Tsar365/B6A2
+git clone https://
 cd B6A2
 Install dependencies
 npm install
